@@ -3,6 +3,7 @@ require('dotenv/config');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const { verify } = require('jsonwebtoken');
 const { hash, compare } = require('bcrypt');
 
 const { isAuth } = require('./isAuth');
@@ -109,7 +110,7 @@ server.post('/login', async (req, res) => {
 });
 
 server.post('/logout', (req, res) => {
-  res.clearCookie('refreshToken');
+  res.clearCookie('refreshToken', { path: './refresh_token' });
   return res.send({
     message: 'Logged out',
   });
@@ -128,6 +129,46 @@ server.get('/protected', async (req, res) => {
       error: `${error.message}`,
     });
   }
+});
+
+server.post('/refresh_token', (req, res) => {
+  const { refreshToken } = req.cookies;
+
+  if (!refreshToken) {
+    return res.send({
+      accessToken: '',
+    });
+  }
+
+  let payload = null;
+  try {
+    payload = verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+  } catch (error) {
+    return res.send({
+      accessToken: '',
+    });
+  }
+
+  const user = fakeDb.find((u) => u.id === payload.userId);
+  if (!user) {
+    return res.send({
+      accessToken: '',
+    });
+  }
+  if (user.refreshToken !== refreshToken) {
+    return res.send({
+      accessToken: '',
+    });
+  }
+
+  const accessToken = createAccessToken(user.id);
+  const newRefreshToken = createRefreshToken(user.id);
+  user.refreshToken = newRefreshToken;
+
+  sendRefreshToken(res, newRefreshToken);
+  return res.send({
+    accessToken,
+  });
 });
 
 server.listen(process.env.PORT, () => {
