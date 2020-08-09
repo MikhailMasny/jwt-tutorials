@@ -1,17 +1,18 @@
-const dotenv = require('dotenv/config');
+require('dotenv/config');
+
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const { verify } = require('jsonwebtoken');
 const { hash, compare } = require('bcrypt');
 
+const { isAuth } = require('./isAuth');
+const { fakeDb } = require('./fakeDb');
 const {
   createAccessToken,
   createRefreshToken,
   sendAccessToken,
   sendRefreshToken,
 } = require('./tokens');
-const { fakeDb } = require('./fakeDb');
 
 // 1. Register a user
 // 2. Login a user
@@ -112,6 +113,21 @@ server.post('/logout', (req, res) => {
   return res.send({
     message: 'Logged out',
   });
+});
+
+server.get('/protected', async (req, res) => {
+  try {
+    const userId = isAuth(req);
+    if (userId !== null) {
+      res.send({
+        data: 'This is protected data',
+      });
+    }
+  } catch (error) {
+    res.send({
+      error: `${error.message}`,
+    });
+  }
 });
 
 server.listen(process.env.PORT, () => {
