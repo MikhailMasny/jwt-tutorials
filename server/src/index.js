@@ -17,10 +17,10 @@ const server = express();
 server.use(cookieParser());
 
 server.use(
-    cors({
-        origin: 'http://localhost:3000',
-        credentials: true,
-    })
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }),
 );
 
 // Needed to be able to read body data
@@ -28,10 +28,12 @@ server.use(
 server.use(express.json());
 
 // Use to support URL-encoded bodies
-server.use(express.urlencoded({
+server.use(
+  express.urlencoded({
     extended: true,
-}));
+  }),
+);
 
 server.listen(process.env.PORT, () => {
-    console.log(`Server listening on port ${process.env.PORT}`)
+  console.log(`Server listening on port ${process.env.PORT}`);
 });
