@@ -5,6 +5,12 @@ const cors = require('cors');
 const { verify } = require('jsonwebtoken');
 const { hash, compare } = require('bcrypt');
 
+const {
+  createAccessToken,
+  createRefreshToken,
+  sendAccessToken,
+  sendRefreshToken,
+} = require('./tokens');
 const { fakeDb } = require('./fakeDb');
 
 // 1. Register a user
@@ -36,10 +42,6 @@ server.use(
   }),
 );
 
-server.listen(process.env.PORT, () => {
-  console.log(`Server listening on port ${process.env.PORT}`);
-});
-
 server.post('/register', async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -68,4 +70,43 @@ server.post('/register', async (req, res) => {
       error: `${error.message}`,
     });
   }
+});
+
+server.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Find user in fake database. If not exist - send error
+    const user = fakeDb.find((u) => u.email === email);
+    if (!user) {
+      throw new Error('User does not exist');
+    }
+
+    // Compare crypted password and see if it checks out, else - send error
+    const valid = await compare(password, user.password);
+    if (!valid) {
+      throw new Error('Login or password is not correct');
+    }
+
+    // Create access and refresh tokens
+    const accessToken = createAccessToken(user.id);
+    const refreshToken = createRefreshToken(user.id);
+
+    // Put refresh token into fake database
+    user.refreshToken = refreshToken;
+
+    console.log(fakeDb);
+
+    // Send tokens
+    sendRefreshToken(res, refreshToken);
+    sendAccessToken(res, req, accessToken);
+  } catch (error) {
+    res.send({
+      error: `${error.message}`,
+    });
+  }
+});
+
+server.listen(process.env.PORT, () => {
+  console.log(`Server listening on port ${process.env.PORT}`);
 });
