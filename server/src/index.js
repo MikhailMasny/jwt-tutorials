@@ -5,6 +5,8 @@ const cors = require('cors');
 const { verify } = require('jsonwebtoken');
 const { hash, compare } = require('bcrypt');
 
+const { fakeDb } = require('./fakeDb');
+
 // 1. Register a user
 // 2. Login a user
 // 3. Logout a user
@@ -36,4 +38,34 @@ server.use(
 
 server.listen(process.env.PORT, () => {
   console.log(`Server listening on port ${process.env.PORT}`);
+});
+
+server.post('/register', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    // Check if user already exist..
+    const user = fakeDb.find((u) => u.email === email);
+    if (user) {
+      throw new Error('User already exist..');
+    }
+
+    // If user not exist, hash the password
+    const hashedPassword = await hash(password, 10);
+
+    // Insert the user in fake database
+    fakeDb.push({
+      id: fakeDb.length,
+      email,
+      password: hashedPassword,
+    });
+    res.send({
+      message: 'User created',
+    });
+
+    console.log(fakeDb);
+  } catch (error) {
+    res.send({
+      error: `${error.message}`,
+    });
+  }
 });
