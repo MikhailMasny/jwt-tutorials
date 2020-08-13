@@ -4,6 +4,7 @@ import { URL_LOGOUT } from "../constants/url";
 import { UserContext } from "../contexts/UserContext";
 
 const LogoutPage = () => {
+  // eslint-disable-next-line
   const [user, setUser] = useContext(UserContext);
 
   const logOutCallback = async () => {

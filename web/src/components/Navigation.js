@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { UserContext } from "../contexts/UserContext";
 
 const Navigation = () => {
-  const [user, setUser] = useContext(UserContext);
+  const [user] = useContext(UserContext);
 
   if (user.accessToken && user.accessToken !== "") {
     return (

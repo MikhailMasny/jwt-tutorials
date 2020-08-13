@@ -10,7 +10,8 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch(URL_REGISTER, { // TODO: to fetchService
+    const response = await fetch(URL_REGISTER, {
+      // TODO: to fetchService
       method: "POST",
       credentials: "include",
       headers: {

@@ -10,7 +10,8 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch(URL_LOGIN, { // TODO: to fetchService
+    const response = await fetch(URL_LOGIN, {
+      // TODO: to fetchService
       method: "POST",
       credentials: "include",
       headers: {
@@ -26,6 +27,7 @@ const LoginPage = () => {
       setUser({
         accessToken: result.accessToken,
       });
+      console.log('User' + user)
     } else {
       console.error(result.error);
     }

@@ -1,8 +1,9 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext } from "react";
 
-import { UserContext } from '../contexts/UserContext';
+import { UserContext } from "../contexts/UserContext";
 
 const ProtectedPage = () => {
+  // eslint-disable-next-line
   const [user, setUser] = useContext(UserContext);
 
   useEffect(() => {
