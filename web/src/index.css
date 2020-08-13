@@ -5,8 +5,12 @@ body {
   background: steelblue;
 }
 
-.background {
+.red {
   background: red;
+}
+
+.green {
+  background: green;
 }
 
 .app {
@@ -19,28 +23,20 @@ body {
   font-size: 16px;
 }
 
-.login {
-  min-height: 200px;
-  min-width: 300px;
+.form {
+  height: 150px;
+  width: 200px;
   background: white;
   padding: 20px;
-  border-top: 5px lightblue solid;
   color: black;
 }
 
-.login__button {
-  background: lightblue;
-  display: block;
-  width: 100%;
-  height: 50px;
+.login {
+  border-top: 5px green solid;
 }
 
-.login__input {
-  display: block;
-  padding: 20px;
-  width: 100%;
-  height: 50px;
-  margin: 10px 0;
+.register {
+  border-top: 5px yellow solid;
 }
 
 ul {

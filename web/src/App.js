@@ -1,38 +1,20 @@
-import React, { useState, useEffect, useContext } from "react";
-import { NavLink, BrowserRouter as Router } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router } from 'react-router-dom';
 
-import Content from "./components/Content";
-import Login from "./components/Login";
-import Navigation from "./components/Navigation";
-import Protected from "./components/Protected";
-import Register from "./components/Register";
+import Navigation from './components/Navigation';
+import Loading from './components/Loading';
 import { UserContext } from "./contexts/UserContext";
 import { useRoutes } from './routes';
-
-import Loading from './components/Loading'
-
-const URL = 'http://localhost:4000/refresh_token';
-const URL_LOGOUT = 'http://localhost:4000/logout';
+import { URL_REFRESH_TOKEN, URL_LOGOUT } from './constants/url';
 
 function App() {
   const [user, setUser] = useState({});
-  const [loading, setLoading] = useState(true);
-  const routes = useRoutes(loading);
-
-  const logOutCallback = async () => {
-    await fetch(URL_LOGOUT, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    setUser({});
-  };
+  const [loading, setLoading] = useState(false);
+  const routes = useRoutes(user);
 
   useEffect(() => {
     async function checkRefreshToken() {
-      const response = await fetch(URL, {
+      const response = await fetch(URL_REFRESH_TOKEN, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -40,25 +22,27 @@ function App() {
         },
       });
       const result = await response.json();
+  
       setUser({
         accessToken: result.accessToken,
       });
-      setLoading(false);
+
+      setLoading(true);
     }
     checkRefreshToken();
   }, []);
 
-  if (loading) {
-    console.log(loading);
+  if (!loading) {
     return (
       <Loading />
     )
   }
-  console.log(loading);
+
   return (
     <UserContext.Provider value={[user, setUser]}>
       <div className="app">
         <Router>
+          <Navigation />
           { routes }
         </Router>
       </div>

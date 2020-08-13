@@ -47,6 +47,10 @@ server.use(
 server.post('/register', async (req, res) => {
   const { email, password } = req.body;
   try {
+    if (email === '' || password === '') {
+      throw new Error('Incorrect data');
+    }
+
     // Check if user already exist..
     const user = fakeDb.find((u) => u.email === email);
     if (user) {
@@ -110,7 +114,7 @@ server.post('/login', async (req, res) => {
 });
 
 server.post('/logout', (req, res) => {
-  res.clearCookie('refreshToken', { path: './refresh_token' });
+  res.clearCookie('refreshToken', { path: '/refresh_token' });
   return res.send({
     message: 'Logged out',
   });
